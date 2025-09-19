@@ -1,0 +1,34 @@
+name: Deploy to IONOS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build --if-present -- --configuration production
+
+      - name: Deploy to IONOS via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4
+        with:
+          server: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          local-dir: ${{ secrets.APP_DIST }}
+          server-dir: ${{ secrets.REMOTE_DIR }}
