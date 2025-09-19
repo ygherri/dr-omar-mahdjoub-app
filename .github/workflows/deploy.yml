@@ -16,6 +16,11 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build -- --configuration production
+      - name: Show build output (debug)
+        run: |
+          echo "APP_DIST=${{ secrets.APP_DIST }}"
+          ls -la "${{ secrets.APP_DIST }}" || true
+          find "${{ secrets.APP_DIST }}" -maxdepth 2 -type f -name "index.html" -print || true
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
