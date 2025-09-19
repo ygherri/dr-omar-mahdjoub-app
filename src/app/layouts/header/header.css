@@ -1,0 +1,31 @@
+.header-shadow {
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+}
+
+.nav-link {
+  position: relative;
+  color: #374151;          /* text-gray-700 */
+  font-weight: 500;
+  font-size: 0.875rem;     /* text-sm */
+  text-decoration: none;
+  transition: color .25s ease;
+}
+
+.nav-link:hover {
+  color: #2563eb;          /* primary */
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 0;
+  background: #2563eb;
+  transition: width .25s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}

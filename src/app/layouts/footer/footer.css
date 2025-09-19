@@ -1,0 +1,8 @@
+:root{
+  --primary:#2563eb;
+}
+.link{
+  color:#9ca3af; transition:color .2s ease;
+  display:block; cursor:pointer;
+}
+.link:hover{ color:#fff; }

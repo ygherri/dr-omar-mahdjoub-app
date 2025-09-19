@@ -1,0 +1,105 @@
+@import 'leaflet/dist/leaflet.css';
+
+:root{
+  --primary:#2563eb;
+  --secondary:#93c5fd;
+}
+
+/* Utilitaires “primary” si Tailwind custom n’est pas branché */
+.text-primary{color:var(--primary)!important;}
+.bg-primary{background-color:var(--primary)!important;}
+.bg-primary\/10{background-color:rgba(37,99,235,.10)!important;}
+.border-primary\/10{border-color:rgba(37,99,235,.10)!important;}
+.hover\:bg-primary\/90:hover{background-color:rgba(37,99,235,.90)!important;}
+.shadow-primary\/20{box-shadow:0 10px 20px rgba(37,99,235,.20)!important;}
+.rounded-button{border-radius:8px;}
+
+/* Tuiles du hero */
+.card-white{
+  background:rgba(255,255,255,.90);
+  -webkit-backdrop-filter:saturate(1.2) blur(6px);
+  backdrop-filter:saturate(1.2) blur(6px);
+  padding:1.5rem; border-radius:1rem;
+  box-shadow:0 10px 24px rgba(2,8,23,.08);
+  border:1px solid rgba(37,99,235,.10);
+  transition:transform .25s ease;
+}
+.card-white:hover{ transform:translateY(-4px); }
+.icon-chip{
+  width:48px; height:48px; border-radius:12px; display:grid; place-items:center;
+  background:rgba(37,99,235,.10); margin-bottom:1rem;
+}
+.tile-title{ font-weight:600; margin-bottom:.25rem; }
+.tile-text{ color:#64748b; }
+
+/* Cartes “4 blocs” */
+.card-plate{
+  background:#fff; padding:1.5rem; border-radius:1rem;
+  box-shadow:0 8px 20px rgba(2,8,23,.05);
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.card-plate:hover{ box-shadow:0 14px 28px rgba(2,8,23,.08); }
+.chip{ width:48px; height:48px; border-radius:12px; display:grid; place-items:center; margin-bottom:1.25rem; }
+.chip.blue{ background:rgba(37,99,235,.10); color:var(--primary); }
+.chip.red{ background:#fee2e2; color:#ef4444; }
+.chip.green{ background:#ecfdf5; color:#059669; }
+
+.kv-line{ display:flex; align-items:center; justify-content:space-between; padding:.75rem; border-radius:.75rem; }
+.info-box{ background:#f9fafb; padding:.75rem; border-radius:.75rem; }
+.emergency-line{ display:flex; align-items:center; font-size:.95rem; background:#fee2e2; color:#b91c1c; padding:.6rem .75rem; border-radius:.6rem; }
+
+/* Services */
+.service-card{ transition:all .3s ease; }
+.service-card:hover{ transform:translateY(-4px); box-shadow:0 10px 20px rgba(37,99,235,.10); }
+.mini-chip{
+  width:40px; height:40px; border-radius:.75rem;
+  display:grid; place-items:center;
+  background:rgba(37,99,235,.10); color:var(--primary); margin-bottom:1rem;
+}
+.bullet{ display:flex; align-items:center; font-size:.9rem; color:#64748b; }
+
+/* KV / list rows (Tarifs) */
+.kv{ display:flex; align-items:center; justify-content:space-between; padding:.65rem 0; }
+.kv-left{ display:flex; align-items:center; gap:.6rem; }
+.kv-ico{
+  width:32px; height:32px; display:grid; place-items:center; border-radius:.5rem;
+  background:#eff6ff; color:var(--primary);
+}
+
+/* Consignes */
+.consigne{ display:flex; align-items:flex-start; gap:1rem; }
+.consigne-bullet{
+  width:40px; height:40px; border-radius:999px; background:var(--primary); color:#fff;
+  display:grid; place-items:center; font-weight:700; margin-top:.25rem;
+}
+
+/* Préparer sa consultation */
+.prep{ display:flex; align-items:flex-start; gap:1rem; }
+.prep-ico{
+  width:40px; height:40px; display:grid; place-items:center; border-radius:999px;
+  background:#fff; box-shadow:0 6px 16px rgba(2,8,23,.06);
+}
+
+/* Info lines (contact) */
+.info-line{ display:flex; gap:.75rem; }
+.info-line i{ margin-top:.25rem; }
+
+/* FAQ sans JS */
+.faq{
+  background:#fff; border:1px solid #f1f5f9; border-radius:12px; padding:.5rem 1rem;
+  box-shadow:0 6px 14px rgba(2,8,23,.04);
+}
+.faq > summary{
+  cursor:pointer; list-style:none; padding:.8rem 0; font-weight:600; color:#0f172a;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.faq > summary::-webkit-details-marker{ display:none; }
+.faq[open] > summary{ color:var(--primary); }
+.faq-body{ padding:.5rem 0 1rem; color:#475569; }
+
+/* Labels flottants (form) */
+.floating-label{
+  position:absolute; left:.75rem; top:-.6rem; padding:0 .4rem;
+  background:#fff; color:var(--primary); font-size:.75rem; font-weight:600;
+  border-radius:.25rem;
+}

@@ -1,13 +1,108 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>DrOmarMahdjoubApp</title>
+  <title>Dr Omar Mahdjoub - Médecin Généraliste - Urgentiste</title>
+  <meta name="description" content="Le Dr Omar Mahdjoub, médecin généraliste et urgentiste à Creil (60100), vous accueille sur rendez-vous. Consultations de médecine générale, urgences, suivi pédiatrique, pathologies chroniques et vaccinations. Cabinet conventionné secteur 1, Carte Vitale acceptée.">
+
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          primary: '#2563eb',
+          secondary: '#93c5fd',
+        },
+        borderRadius: {
+          'button': '8px',
+        }
+      }
+    }
+  }
+</script>
+
+
 </head>
 <body>
   <app-root></app-root>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Carte Cookies -->
+<div id="cookie-card" class="fixed bottom-6 left-6 max-w-xs bg-white text-gray-800 shadow-xl rounded-xl border border-gray-200 p-5 z-50">
+  <h3 class="text-sm font-semibold mb-2">🍪 Gestion des cookies</h3>
+  <p class="text-xs text-gray-600 leading-relaxed">
+    Ce site utilise des cookies pour améliorer votre expérience et analyser la fréquentation
+    (<a href="/politique-cookies" class="underline text-blue-600 hover:text-blue-800">
+  En savoir plus
+</a>
+
+
+
+).
+  </p>
+  <div class="flex gap-2 mt-4">
+    <button id="accept-cookies" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg">
+      Accepter
+    </button>
+    <button id="decline-cookies" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-3 py-2 rounded-lg">
+      Refuser
+    </button>
+  </div>
+</div>
+
+<script>
+  const cookieCard = document.getElementById('cookie-card');
+  const acceptBtn = document.getElementById('accept-cookies');
+  const declineBtn = document.getElementById('decline-cookies');
+
+  // Vérifie si déjà choisi
+  if (localStorage.getItem('cookieConsent')) {
+    cookieCard.style.display = 'none';
+    if (localStorage.getItem('cookieConsent') === 'accepted') {
+      loadAnalytics();
+    }
+  }
+
+  acceptBtn.addEventListener('click', () => {
+    localStorage.setItem('cookieConsent', 'accepted');
+    cookieCard.style.display = 'none';
+    loadAnalytics();
+  });
+
+  declineBtn.addEventListener('click', () => {
+    localStorage.setItem('cookieConsent', 'declined');
+    cookieCard.style.display = 'none';
+  });
+
+  // Fonction pour charger GA4 seulement si consentement
+  function loadAnalytics() {
+    // Remplace G-XXXXXXXXXX par ton propre ID de mesure Google Analytics
+    const GA_MEASUREMENT_ID = "G-XXXXXXXXXX";
+
+    // Crée le script GA dynamiquement
+    const gtagScript = document.createElement("script");
+    gtagScript.async = true;
+    gtagScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(gtagScript);
+
+    // Initialise GA après chargement
+    gtagScript.onload = () => {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', GA_MEASUREMENT_ID);
+    };
+  }
+</script>
+
 </body>
 </html>

@@ -1,1 +1,55 @@
-/* You can add global styles to this file, and also import other style files */
+/* ====== Global helpers (sans Tailwind directives) ====== */
+@import 'leaflet/dist/leaflet.css';
+/* Police système propre et lissée */
+:root {
+  --primary: #2563eb;
+  --secondary: #93c5fd;
+}
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Boutons arrondis utilisés dans le HTML (classe utilitaire custom) */
+.rounded-button {
+  border-radius: 8px; /* correspond à tailwind 'rounded-button' défini dans la config */
+}
+
+/* Ombre fine sous le header (si tu veux l’utiliser globalement) */
+.header-shadow {
+  box-shadow: 0 1px 0 0 rgba(0,0,0,0.05);
+}
+
+/* Liens de nav avec soulignement animé (si tu n’as pas déjà mis ça dans header.css) */
+.nav-link {
+  position: relative;
+  color: #374151;          /* text-gray-700 */
+  font-weight: 500;
+  font-size: 0.875rem;     /* text-sm */
+  text-decoration: none;
+  transition: color .25s ease;
+}
+.nav-link:hover { color: var(--primary); }
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 2px;
+  width: 0;
+  background: var(--primary);
+  transition: width .25s ease;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* Petits utilitaires neutres si besoin */
+.container-safe {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+.card {
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 16px;
+  background: #fff;
+}
