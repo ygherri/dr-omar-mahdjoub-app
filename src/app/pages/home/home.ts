@@ -3,9 +3,9 @@ import emailjs from '@emailjs/browser';
 import * as L from 'leaflet';
 
 // ⬇️ Import des icônes locales de Leaflet
-import marker2xUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import markerUrl from 'leaflet/dist/images/marker-icon.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+// import marker2xUrl from 'leaflet/dist/images/marker-icon-2x.png';
+// import markerUrl from 'leaflet/dist/images/marker-icon.png';
+// import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
 @Component({
   selector: 'app-home',
@@ -64,14 +64,10 @@ export class Home implements AfterViewInit, OnDestroy {
 
   // ✅ Initialisation Leaflet
   ngAfterViewInit(): void {
-    const pin = L.icon({
-      iconRetinaUrl: marker2xUrl as unknown as string,
-      iconUrl: markerUrl as unknown as string,
-      shadowUrl: shadowUrl as unknown as string,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
+    L.Icon.Default.mergeOptions({
+      iconUrl: 'assets/leaflet/marker-icon.png',
+      iconRetinaUrl: 'assets/leaflet/marker-icon-2x.png',
+      shadowUrl: 'assets/leaflet/marker-shadow.png',
     });
 
     this.map = L.map('map', { zoomControl: true }).setView([49.2583, 2.4833], 15);
@@ -80,7 +76,7 @@ export class Home implements AfterViewInit, OnDestroy {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
 
-    L.marker([49.2583, 2.4833], { icon: pin })
+    L.marker([49.2583, 2.4833])
       .addTo(this.map)
       .bindPopup("<b>Cabinet Médical</b><br>14 place de l'Église, 60100 Creil");
 
