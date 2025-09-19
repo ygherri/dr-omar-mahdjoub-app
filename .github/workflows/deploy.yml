@@ -32,3 +32,10 @@ jobs:
           remote_path: ${{ secrets.REMOTE_DIR }}
           sftp_only:   true
           delete_remote_files: false
+      - name: List remote dir (debug)
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y sshpass
+        sshpass -p "${{ secrets.PASSWORD }}" sftp -P 22 -o StrictHostKeyChecking=no "${{ secrets.USERNAME }}@${{ secrets.HOST }}" << 'EOF'
+        ls -la ${{ secrets.REMOTE_DIR }}
+        EOF
