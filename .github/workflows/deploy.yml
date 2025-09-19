@@ -1,0 +1,29 @@
+name: Build & Deploy to IONOS (SFTP)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build -- --configuration production
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server:      ${{ secrets.HOST }}
+          username:    ${{ secrets.USERNAME }}
+          password:    ${{ secrets.PASSWORD }}
+          port:        22
+          local_path:  ${{ secrets.APP_DIST }}    
+          remote_path: ${{ secrets.REMOTE_DIR }}
+          sftp_only:   true
+          delete_remote_files: true
