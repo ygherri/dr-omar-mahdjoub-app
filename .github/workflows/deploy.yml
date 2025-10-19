@@ -1,13 +1,23 @@
+<<<<<<< HEAD
 name: Deploy to IONOS
 
 on:
   push:
     branches:
       - main
+=======
+name: Build & Deploy to IONOS (SFTP)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+>>>>>>> ed714492c7896e8228be026f8515d24c382cc84f
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+<<<<<<< HEAD
 
     steps:
       - name: Checkout code
@@ -32,3 +42,36 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           local-dir: ${{ secrets.APP_DIST }}
           server-dir: ${{ secrets.REMOTE_DIR }}
+=======
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build -- --configuration production
+      - name: Show build output (debug)
+        run: |
+          echo "APP_DIST=${{ secrets.APP_DIST }}"
+          ls -la "${{ secrets.APP_DIST }}" || true
+          find "${{ secrets.APP_DIST }}" -maxdepth 2 -type f -name "index.html" -print || true
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server:      ${{ secrets.HOST }}
+          username:    ${{ secrets.USERNAME }}
+          password:    ${{ secrets.PASSWORD }}
+          port:        22
+          local_path:  ${{ secrets.APP_DIST }}    
+          remote_path: ${{ secrets.REMOTE_DIR }}
+          sftp_only:   true
+          delete_remote_files: false
+      - name: List remote dir (debug)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y sshpass
+          sshpass -p "${{ secrets.PASSWORD }}" sftp -P 22 -o StrictHostKeyChecking=no "${{ secrets.USERNAME }}@${{ secrets.HOST }}" << 'EOF'
+          ls -la ${{ secrets.REMOTE_DIR }}
+          EOF
+>>>>>>> ed714492c7896e8228be026f8515d24c382cc84f

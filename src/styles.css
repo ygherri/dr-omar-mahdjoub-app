@@ -1,6 +1,6 @@
-/* ====== Global helpers (sans Tailwind directives) ====== */
-@import 'leaflet/dist/leaflet.css';
-/* Police système propre et lissée */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
   --primary: #2563eb;
   --secondary: #93c5fd;
@@ -10,17 +10,14 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Boutons arrondis utilisés dans le HTML (classe utilitaire custom) */
 .rounded-button {
-  border-radius: 8px; /* correspond à tailwind 'rounded-button' défini dans la config */
+  border-radius: 8px; 
 }
 
-/* Ombre fine sous le header (si tu veux l’utiliser globalement) */
 .header-shadow {
   box-shadow: 0 1px 0 0 rgba(0,0,0,0.05);
 }
 
-/* Liens de nav avec soulignement animé (si tu n’as pas déjà mis ça dans header.css) */
 .nav-link {
   position: relative;
   color: #374151;          /* text-gray-700 */
@@ -42,7 +39,6 @@ html, body {
 }
 .nav-link:hover::after { width: 100%; }
 
-/* Petits utilitaires neutres si besoin */
 .container-safe {
   max-width: 80rem;
   margin-inline: auto;
@@ -52,4 +48,18 @@ html, body {
   border: 1px solid rgba(0,0,0,0.05);
   border-radius: 16px;
   background: #fff;
+}
+.ml-3-mobile {
+  margin-left: 1rem;
+}
+@media (max-width: 768px) {
+  .ml-3-mobile {
+    margin-left:0.75rem;
+  }
+  .btn-phone-xs {
+    font-size: 0.75rem;
+  }
+  .ml-2-mobile {
+    margin-left: 0.5rem;
+  }
 }
