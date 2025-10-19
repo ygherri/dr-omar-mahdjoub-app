@@ -1,4 +1,4 @@
-name: Build & Deploy to IONOS (SFTP)
+name: Deploy to IONOS (main only)
 
 on:
   push:
@@ -25,13 +25,13 @@ jobs:
       - name: Build Angular (production)
         run: npm run build -- --configuration production
 
-      - name: Show build output (debug)
+      - name: Write version file (debug)
         run: |
-          ls -la dist || true
-          ls -la dist/dr-omar-mahdjoub-app || true
-          find dist -maxdepth 2 -type f -name "index.html" -print || true
+          mkdir -p dist/dr-omar-mahdjoub-app
+          echo "SHA: $GITHUB_SHA" > dist/dr-omar-mahdjoub-app/version.txt
+          date +"%Y-%m-%d %H:%M:%S %Z" >> dist/dr-omar-mahdjoub-app/version.txt
 
-      - name: Deploy via SFTP
+      - name: Deploy via SFTP (replace remote)
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server:      ${{ secrets.HOST }}
@@ -41,4 +41,4 @@ jobs:
           local_path:  dist/dr-omar-mahdjoub-app
           remote_path: ${{ secrets.REMOTE_DIR }}
           sftp_only:   true
-          delete_remote_files: false
+          delete_remote_files: true
