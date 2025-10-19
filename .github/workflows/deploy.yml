@@ -2,7 +2,7 @@ name: Deploy to IONOS (main only)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Déclenche seulement sur main
   workflow_dispatch:
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -31,14 +31,40 @@ jobs:
           echo "SHA: $GITHUB_SHA" > dist/dr-omar-mahdjoub-app/version.txt
           date +"%Y-%m-%d %H:%M:%S %Z" >> dist/dr-omar-mahdjoub-app/version.txt
 
-      - name: Deploy via SFTP (replace remote)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server:      ${{ secrets.HOST }}
-          username:    ${{ secrets.USERNAME }}
-          password:    ${{ secrets.PASSWORD }}
-          port:        22
-          local_path:  dist/dr-omar-mahdjoub-app
-          remote_path: ${{ secrets.REMOTE_DIR }}
-          sftp_only:   true
-          delete_remote_files: true
+      - name: Show build output (debug)
+        run: |
+          ls -la dist || true
+          find dist -maxdepth 2 -type f -name "index.html" -print || true
+
+      - name: Install lftp
+        run: sudo apt-get update -y && sudo apt-get install -y lftp
+
+      - name: Deploy to IONOS via SFTP mirror (delete remote)
+        env:
+          HOST:        ${{ secrets.HOST }}
+          USERNAME:    ${{ secrets.USERNAME }}
+          PASSWORD:    ${{ secrets.PASSWORD }}
+          LOCAL_DIR:   dist/dr-omar-mahdjoub-app
+          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+        run: |
+          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 30
+          set xfer:log 1
+          mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
+          bye
+          EOF
+
+      - name: List remote dir (debug)
+        env:
+          HOST:        ${{ secrets.HOST }}
+          USERNAME:    ${{ secrets.USERNAME }}
+          PASSWORD:    ${{ secrets.PASSWORD }}
+          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+        run: |
+          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
+          set sftp:auto-confirm yes
+          ls -la "$REMOTE_DIR"
+          bye
+          EOF
