@@ -31,6 +31,11 @@ jobs:
 
       - name: Install lftp
         run: sudo apt-get update -y && sudo apt-get install -y lftp
+      - name: Write version file (debug)
+        run: |
+          mkdir -p "${{ secrets.APP_DIST }}"
+          echo "SHA: $GITHUB_SHA" > "${{ secrets.APP_DIST }}/version.txt"
+          date +"%Y-%m-%d %H:%M:%S %Z" >> "${{ secrets.APP_DIST }}/version.txt"
 
       - name: Deploy to IONOS via SFTP mirror (delete remote)
         env:
@@ -52,24 +57,34 @@ jobs:
           mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
           bye
           EOF
-      - name: Write version file (debug)
-        run: |
-          mkdir -p "${{ secrets.APP_DIST }}"
-          echo "SHA: $GITHUB_SHA" > "${{ secrets.APP_DIST }}/version.txt"
-          date +"%Y-%m-%d %H:%M:%S %Z" >> "${{ secrets.APP_DIST }}/version.txt"
 
-      - name: List remote dir (debug)
-        env:
-          HOST:        ${{ secrets.HOST }}
-          USERNAME:    ${{ secrets.USERNAME }}
-          PASSWORD:    ${{ secrets.PASSWORD }}
-          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
-        run: |
-          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
-          set sftp:auto-confirm yes
-          cd "$REMOTE_DIR"
-          pwd
-          cls -al
-          bye
-          EOF
+      - name: List remote dirs (debug)
+  env:
+    HOST:        ${{ secrets.HOST }}
+    USERNAME:    ${{ secrets.USERNAME }}
+    PASSWORD:    ${{ secrets.PASSWORD }}
+    REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+      run: |
+        lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
+        set sftp:auto-confirm yes
+        echo "== pwd =="
+        pwd
+
+        echo "== Listing REMOTE_DIR: $REMOTE_DIR =="
+        cd "$REMOTE_DIR" || echo "cannot cd to REMOTE_DIR"
+        pwd || true
+        cls -al || true
+
+        echo "== Listing /htdocs =="
+        cd /htdocs || true
+        pwd || true
+        cls -al || true
+
+        echo "== Listing /htdocs/browser =="
+        cd /htdocs/browser || true
+        pwd || true
+        cls -al || true
+        bye
+        EOF
+
 
