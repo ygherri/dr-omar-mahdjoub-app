@@ -34,19 +34,25 @@ jobs:
 
       - name: Deploy to IONOS via SFTP mirror (delete remote)
         env:
-          HOST:       ${{ secrets.HOST }}
-          USERNAME:   ${{ secrets.USERNAME }}
-          PASSWORD:   ${{ secrets.PASSWORD }}
-          LOCAL_DIR:  ${{ secrets.APP_DIST }}
-          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+          HOST:        ${{ secrets.HOST }}
+          USERNAME:    ${{ secrets.USERNAME }}
+          PASSWORD:    ${{ secrets.PASSWORD }}
+          LOCAL_DIR:   ${{ secrets.APP_DIST }}
+          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
         run: |
-          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
+          echo "LOCAL_DIR=$LOCAL_DIR"
+          echo "REMOTE_DIR=$REMOTE_DIR"
+          test -d "$LOCAL_DIR" || (echo "x $LOCAL_DIR introuvable" && exit 1)
+
+          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 30
+          set xfer:log 1
           mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
           bye
           EOF
+
 
       - name: List remote dir (debug)
         env:
