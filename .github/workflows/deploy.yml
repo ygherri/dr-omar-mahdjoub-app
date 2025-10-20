@@ -2,7 +2,7 @@ name: Deploy to IONOS (main only)
 
 on:
   push:
-    branches: [ main ]  # Déclenche seulement sur main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -22,46 +20,40 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build Angular (production)
-        run: npm run build -- --configuration production
-
-      - name: Write version file (debug)
-        run: |
-          mkdir -p dist/dr-omar-mahdjoub-app
-          echo "SHA: $GITHUB_SHA" > dist/dr-omar-mahdjoub-app/version.txt
-          date +"%Y-%m-%d %H:%M:%S %Z" >> dist/dr-omar-mahdjoub-app/version.txt
+      - name: Build Angular (prod)
+        run: npm run build -- --configuration production --base-href /browser/
 
       - name: Show build output (debug)
         run: |
-          ls -la dist || true
-          find dist -maxdepth 2 -type f -name "index.html" -print || true
+          echo "APP_DIST=${{ secrets.APP_DIST }}"
+          ls -la "${{ secrets.APP_DIST }}" || true
+          find "${{ secrets.APP_DIST }}" -maxdepth 2 -type f -name "index.html" -print || true
 
       - name: Install lftp
         run: sudo apt-get update -y && sudo apt-get install -y lftp
 
       - name: Deploy to IONOS via SFTP mirror (delete remote)
         env:
-          HOST:        ${{ secrets.HOST }}
-          USERNAME:    ${{ secrets.USERNAME }}
-          PASSWORD:    ${{ secrets.PASSWORD }}
-          LOCAL_DIR:   dist/dr-omar-mahdjoub-app
-          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+          HOST:       ${{ secrets.HOST }}
+          USERNAME:   ${{ secrets.USERNAME }}
+          PASSWORD:   ${{ secrets.PASSWORD }}
+          LOCAL_DIR:  ${{ secrets.APP_DIST }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
           lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 30
-          set xfer:log 1
           mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
           bye
           EOF
 
       - name: List remote dir (debug)
         env:
-          HOST:        ${{ secrets.HOST }}
-          USERNAME:    ${{ secrets.USERNAME }}
-          PASSWORD:    ${{ secrets.PASSWORD }}
-          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+          HOST:       ${{ secrets.HOST }}
+          USERNAME:   ${{ secrets.USERNAME }}
+          PASSWORD:   ${{ secrets.PASSWORD }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
           lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
           set sftp:auto-confirm yes
