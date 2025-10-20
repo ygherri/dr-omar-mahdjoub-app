@@ -56,13 +56,16 @@ jobs:
 
       - name: List remote dir (debug)
         env:
-          HOST:       ${{ secrets.HOST }}
-          USERNAME:   ${{ secrets.USERNAME }}
-          PASSWORD:   ${{ secrets.PASSWORD }}
-          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+          HOST:        ${{ secrets.HOST }}
+          USERNAME:    ${{ secrets.USERNAME }}
+          PASSWORD:    ${{ secrets.PASSWORD }}
+          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
         run: |
-          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << 'EOF'
+          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
           set sftp:auto-confirm yes
-          ls -la "$REMOTE_DIR"
+          cd "$REMOTE_DIR"
+          pwd
+          cls -al
           bye
           EOF
+
