@@ -52,7 +52,11 @@ jobs:
           mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
           bye
           EOF
-
+      - name: Write version file (debug)
+        run: |
+          mkdir -p "${{ secrets.APP_DIST }}"
+          echo "SHA: $GITHUB_SHA" > "${{ secrets.APP_DIST }}/version.txt"
+          date +"%Y-%m-%d %H:%M:%S %Z" >> "${{ secrets.APP_DIST }}/version.txt"
 
       - name: List remote dir (debug)
         env:
