@@ -1,6 +1,5 @@
 RewriteEngine On
-RewriteBase /browser/
-RewriteRule ^index\.html$ - [L]
+RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /browser/index.html [L]
+RewriteRule . /index.html [L]
