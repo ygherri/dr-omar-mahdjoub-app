@@ -1,4 +1,4 @@
-name: Deploy to IONOS (main only)
+name: Deploy Angular to IONOS
 
 on:
   push:
@@ -10,81 +10,74 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular (prod)
-        run: npm run build -- --configuration production --base-href /browser/
+      - name: Build Angular (production)
+        run: npm run build -- --configuration production
 
       - name: Show build output (debug)
         run: |
-          echo "APP_DIST=${{ secrets.APP_DIST }}"
-          ls -la "${{ secrets.APP_DIST }}" || true
-          find "${{ secrets.APP_DIST }}" -maxdepth 2 -type f -name "index.html" -print || true
+          echo "Build directories:"
+          ls -la dist/
+          echo "Index.html location:"
+          find dist -maxdepth 3 -name "index.html" -print
 
       - name: Install lftp
         run: sudo apt-get update -y && sudo apt-get install -y lftp
-      - name: Write version file (debug)
-        run: |
-          mkdir -p "${{ secrets.APP_DIST }}"
-          echo "SHA: $GITHUB_SHA" > "${{ secrets.APP_DIST }}/version.txt"
-          date +"%Y-%m-%d %H:%M:%S %Z" >> "${{ secrets.APP_DIST }}/version.txt"
 
-      - name: Deploy to IONOS via SFTP mirror (delete remote)
-        env:
-          HOST:        ${{ secrets.HOST }}
-          USERNAME:    ${{ secrets.USERNAME }}
-          PASSWORD:    ${{ secrets.PASSWORD }}
-          LOCAL_DIR:   ${{ secrets.APP_DIST }}
-          REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
+      - name: Write version file
         run: |
+          mkdir -p dist/version-info
+          echo "Commit SHA: $GITHUB_SHA" > dist/version-info/version.txt
+          date +"%Y-%m-%d %H:%M:%S %Z" >> dist/version-info/version.txt
+
+      - name: Deploy to IONOS via SFTP mirror
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+        run: |
+          LOCAL_DIR="dist/nom-du-projet"
           echo "LOCAL_DIR=$LOCAL_DIR"
           echo "REMOTE_DIR=$REMOTE_DIR"
-          test -d "$LOCAL_DIR" || (echo "x $LOCAL_DIR introuvable" && exit 1)
+
+          if [ ! -d "$LOCAL_DIR" ]; then
+            echo "Erreur : répertoire $LOCAL_DIR introuvable"
+            exit 1
+          fi
 
           lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 30
-          set xfer:log 1
+          mkdir -p "$REMOTE_DIR"
           mirror -R --delete --verbose --parallel=4 "$LOCAL_DIR" "$REMOTE_DIR"
           bye
           EOF
 
       - name: List remote dirs (debug)
-  env:
-    HOST:        ${{ secrets.HOST }}
-    USERNAME:    ${{ secrets.USERNAME }}
-    PASSWORD:    ${{ secrets.PASSWORD }}
-    REMOTE_DIR:  ${{ secrets.REMOTE_DIR }}
-      run: |
-        lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
-        set sftp:auto-confirm yes
-        echo "== pwd =="
-        pwd
-
-        echo "== Listing REMOTE_DIR: $REMOTE_DIR =="
-        cd "$REMOTE_DIR" || echo "cannot cd to REMOTE_DIR"
-        pwd || true
-        cls -al || true
-
-        echo "== Listing /htdocs =="
-        cd /htdocs || true
-        pwd || true
-        cls -al || true
-
-        echo "== Listing /htdocs/browser =="
-        cd /htdocs/browser || true
-        pwd || true
-        cls -al || true
-        bye
-        EOF
-
-
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+        run: |
+          lftp -u "$USERNAME","$PASSWORD" sftp://$HOST << EOF
+          set sftp:auto-confirm yes
+          echo "== Liste du dossier distant =="
+          cd "$REMOTE_DIR" || echo "Impossible d'accéder à REMOTE_DIR"
+          pwd
+          cls -al
+          bye
+          EOF
