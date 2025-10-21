@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular (production)
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production --base-href /browser/htdocs/
 
       - name: Show build output (debug)
         run: |
