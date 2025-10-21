@@ -48,7 +48,7 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
-          LOCAL_DIR="dist/nom-du-projet"
+          LOCAL_DIR="dist/dr-omar-mahdjoub-app"
           echo "LOCAL_DIR=$LOCAL_DIR"
           echo "REMOTE_DIR=$REMOTE_DIR"
 
